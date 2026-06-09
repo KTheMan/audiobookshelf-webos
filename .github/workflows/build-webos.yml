@@ -51,22 +51,22 @@ jobs:
 
       - name: Package IPK
         run: |
-          cd dist
+          VERSION=$(node -p "require('./appinfo.json').version")
+          
           echo "2.0" > debian-binary
-
+          
           mkdir -p CONTROL
           cat > CONTROL/control << EOF
           Package: com.audiobookshelf.tv
-          Version: $(jq -r '.version' ../appinfo.json)
+          Version: $VERSION
           Architecture: arm
           Maintainer: advplyr
           Section: multimedia
           Priority: optional
           Description: Audiobookshelf - Self-hosted audiobook and podcast server client for LG webOS TV
           EOF
-
-          tar czf ../control.tar.gz -C . CONTROL appinfo.json
-          cd ..
+          
+          tar czf control.tar.gz -C . CONTROL
           tar czf data.tar.gz -C dist .
           ar rcs audiobookshelf-webos.ipk debian-binary control.tar.gz data.tar.gz
 
