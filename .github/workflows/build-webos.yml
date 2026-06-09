@@ -3,18 +3,8 @@ name: Build webOS IPK
 on:
   push:
     branches: [main]
-    paths:
-      - 'components/**'
-      - 'pages/**'
-      - 'plugins/**'
-      - 'store/**'
-      - 'layouts/**'
-      - 'assets/**'
-      - 'strings/**'
-      - 'nuxt.config.js'
-      - 'package.json'
-      - 'appinfo.json'
-      - '.github/workflows/build-webos.yml'
+    tags:
+      - 'v*'
   pull_request:
     branches: [main]
   workflow_dispatch:
