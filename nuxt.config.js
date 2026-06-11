@@ -26,10 +26,10 @@ export default {
     ],
     script: [
       {
-        src: '/libs/sortable.js'
+        src: 'libs/sortable.js'
       }
     ],
-    link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }]
+    link: [{ rel: 'icon', type: 'image/x-icon', href: 'favicon.ico' }]
   },
 
   css: ['@/assets/tailwind.css', '@/assets/app.css', '@/assets/webos.css'],
@@ -57,7 +57,19 @@ export default {
 
   axios: {},
 
+  hooks: {
+    'generate:page'(page) {
+      // webOS loads apps via file:// so absolute paths like /_nuxt/ resolve
+      // to the filesystem root instead of the app directory. Strip <base href>
+      // and rewrite /_nuxt/ script srcs to relative paths.
+      page.html = page.html
+        .replace(/<base[^>]*href="[^"]*"[^>]*>/i, '')
+        .replace(/(<script[^>]+src=")\/(_nuxt\/)/g, '$1./$2')
+    }
+  },
+
   build: {
+    publicPath: './_nuxt/',
     postcss: {
       postcssOptions: {
         plugins: {
@@ -103,6 +115,7 @@ export default {
   },
 
   router: {
-    base: '/'
+    base: '/',
+    mode: 'hash'
   }
 }
