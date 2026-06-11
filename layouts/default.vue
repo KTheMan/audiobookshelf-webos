@@ -4,6 +4,7 @@
     <div id="content" class="overflow-hidden relative" :class="isPlayerOpen ? 'playerOpen' : ''">
       <Nuxt :key="currentLang" />
     </div>
+    <app-side-drawer />
     <app-audio-player-container ref="streamContainer" />
     <modals-libraries-modal />
     <modals-playlists-add-create-modal />
