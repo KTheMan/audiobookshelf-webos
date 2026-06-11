@@ -110,21 +110,6 @@ export default {
         })
       }
 
-      if (this.$platform !== 'ios') {
-        items.push({
-          icon: 'folder',
-          iconOutlined: true,
-          text: this.$strings.ButtonLocalMedia,
-          to: '/localMedia/folders'
-        })
-      } else {
-        items.push({
-          icon: 'download',
-          iconOutlined: false,
-          text: this.$strings.HeaderDownloads,
-          to: '/downloads'
-        })
-      }
       items.push({
         icon: 'settings',
         text: this.$strings.HeaderSettings,
@@ -139,12 +124,6 @@ export default {
       })
 
       if (this.serverConnectionConfig) {
-        items.push({
-          icon: 'language',
-          text: this.$strings.ButtonGoToWebClient,
-          action: 'openWebClient'
-        })
-
         items.push({
           icon: 'login',
           text: this.$strings.ButtonSwitchServerUser,
@@ -164,10 +143,6 @@ export default {
       if (action === 'logout') {
         await this.logout()
         this.$router.push('/connect')
-      } else if (action === 'openWebClient') {
-        this.show = false
-        let path = `/library/${this.$store.state.libraries.currentLibraryId}`
-        await this.$store.dispatch('user/openWebClient', path)
       }
     },
     clickBackground() {
