@@ -17,17 +17,17 @@
 
     <div v-if="!shelves.length && !isLoading" class="absolute top-0 left-0 w-full h-full flex items-center justify-center">
       <div>
-        <p class="mb-4 text-center text-xl">
+        <p class="mb-4 text-center" :class="$platform === 'webos' ? 'text-2xl' : 'text-xl'">
           {{ $strings.MessageBookshelfEmpty }}
         </p>
         <div class="w-full" v-if="!user">
           <div class="flex justify-center items-center mb-3">
-            <span class="material-symbols text-error text-lg">cloud_off</span>
-            <p class="pl-2 text-error text-sm">{{ $strings.MessageAudiobookshelfServerNotConnected }}</p>
+            <span class="material-symbols text-error" :class="$platform === 'webos' ? 'text-2xl' : 'text-lg'">cloud_off</span>
+            <p class="pl-2 text-error" :class="$platform === 'webos' ? 'text-base' : 'text-sm'">{{ $strings.MessageAudiobookshelfServerNotConnected }}</p>
           </div>
         </div>
         <div class="flex justify-center">
-          <ui-btn v-if="!user" small @click="$router.push('/connect')" class="w-32">{{ $strings.ButtonConnect }}</ui-btn>
+          <ui-btn v-if="!user" :small="$platform !== 'webos'" @click="$router.push('/connect')" :class="$platform === 'webos' ? 'px-10 py-3 text-lg' : 'w-32'">{{ $strings.ButtonConnect }}</ui-btn>
         </div>
       </div>
     </div>

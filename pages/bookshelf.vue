@@ -44,13 +44,13 @@ export default {
 }
 
 html[data-platform='webos'] .main-content {
-  height: calc(100% - 96px);
-  max-height: calc(100% - 96px);
-  min-height: calc(100% - 96px);
+  height: calc(100% - 112px);
+  max-height: calc(100% - 112px);
+  min-height: calc(100% - 112px);
 }
 html[data-platform='webos'] .main-content.no-toolbar {
-  height: calc(100% - 48px);
-  max-height: calc(100% - 48px);
-  min-height: calc(100% - 48px);
+  height: calc(100% - 64px);
+  max-height: calc(100% - 64px);
+  min-height: calc(100% - 64px);
 }
 </style>
