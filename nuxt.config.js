@@ -67,7 +67,16 @@ export default {
       }
     },
     babel: {
-      plugins: [['@babel/plugin-proposal-private-property-in-object', { loose: true }]]
+      presets: [
+        ['@babel/preset-env', {
+          targets: { chrome: '38' },
+          useBuiltIns: false
+        }]
+      ],
+      plugins: [
+        ['@babel/plugin-transform-optional-chaining', { loose: true }],
+        ['@babel/plugin-proposal-private-property-in-object', { loose: true }]
+      ]
     },
     extend(config) {
       const stubs = __dirname + '/plugins/webos/capacitor-stubs'

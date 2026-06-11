@@ -83,8 +83,10 @@ export default {
 }
 
 .webos-tv-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-wrap: wrap;
+  flex-wrap: wrap;
   gap: 30px;
 }
 

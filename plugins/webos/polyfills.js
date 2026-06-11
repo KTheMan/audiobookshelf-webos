@@ -107,6 +107,30 @@ if (!String.prototype.includes) {
   }
 }
 
+// String.prototype.padStart polyfill (ES2017)
+if (!String.prototype.padStart) {
+  String.prototype.padStart = function (targetLength, padString) {
+    targetLength = targetLength >> 0
+    padString = String(padString !== undefined ? padString : ' ')
+    if (this.length >= targetLength || padString.length === 0) return String(this)
+    targetLength = targetLength - this.length
+    if (targetLength > padString.length) padString += padString.repeat(Math.ceil(targetLength / padString.length))
+    return padString.slice(0, targetLength) + String(this)
+  }
+}
+
+// String.prototype.padEnd polyfill (ES2017)
+if (!String.prototype.padEnd) {
+  String.prototype.padEnd = function (targetLength, padString) {
+    targetLength = targetLength >> 0
+    padString = String(padString !== undefined ? padString : ' ')
+    if (this.length >= targetLength || padString.length === 0) return String(this)
+    targetLength = targetLength - this.length
+    if (targetLength > padString.length) padString += padString.repeat(Math.ceil(targetLength / padString.length))
+    return String(this) + padString.slice(0, targetLength)
+  }
+}
+
 // Object.assign polyfill
 if (!Object.assign) {
   Object.assign = function (target) {
