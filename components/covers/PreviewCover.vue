@@ -65,8 +65,7 @@ export default {
       return `${this.naturalWidth}x${this.naturalHeight}px`
     },
     placeholderUrl() {
-      const config = this.$config || this.$nuxt.$config
-      return `${config.routerBasePath}/book_placeholder.jpg`
+      return 'book_placeholder.jpg'
     }
   },
   methods: {

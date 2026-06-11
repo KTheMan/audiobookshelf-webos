@@ -46,15 +46,6 @@
           <span class="material-symbols text-2xl leading-none">playlist_add</span>
         </button>
 
-        <!-- Download Section -->
-        <div v-if="userCanDownload" class="flex items-center">
-          <span v-if="isLocal" class="material-symbols px-2 text-success text-2xl leading-none">audio_file</span>
-          <span v-else-if="!localEpisode" class="material-symbols mx-1.5 text-2xl leading-none" :class="downloadItem || pendingDownload ? 'animate-bounce text-warning text-opacity-75' : ''" @click.stop="downloadClick">
-            {{ downloadItem || pendingDownload ? 'downloading' : 'download' }}
-          </span>
-          <span v-else class="material-symbols px-2 text-success text-2xl leading-none">download_done</span>
-        </div>
-
         <!-- Spacer to push elements left -->
         <div class="flex-grow" />
       </div>

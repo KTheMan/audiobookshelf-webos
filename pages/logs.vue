@@ -49,7 +49,7 @@ export default {
         {
           text: this.maskServerAddress ? this.$strings.ButtonUnmaskServerAddress : this.$strings.ButtonMaskServerAddress,
           value: 'toggle-mask-server-address',
-          icon: this.maskServerAddress ? 'remove_moderator' : 'shield'
+          icon: this.maskServerAddress ? 'shield_with_heart' : 'shield'
         },
         {
           text: this.$strings.ButtonClearLogs,

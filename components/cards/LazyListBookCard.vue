@@ -40,9 +40,6 @@
         </button>
       </div>
 
-      <div v-if="localLibraryItem || isLocal" class="absolute top-0 right-0 z-20" :style="{ top: 0.375 * sizeMultiplier + 'rem', right: 0.375 * sizeMultiplier + 'rem', padding: `${0.1 * sizeMultiplier}rem ${0.25 * sizeMultiplier}rem` }">
-        <span class="material-symbols text-2xl text-success">download_done</span>
-      </div>
     </div>
   </div>
 </template>
@@ -127,7 +124,7 @@ export default {
       return this._libraryItem.numEpisodesIncomplete || 0
     },
     placeholderUrl() {
-      return '/book_placeholder.jpg'
+      return 'book_placeholder.jpg'
     },
     bookCoverSrc() {
       if (this.isLocal) {

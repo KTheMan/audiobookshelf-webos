@@ -125,22 +125,32 @@ class AbsAudioPlayerWeb extends WebPlugin {
     this.notifyListeners('onClosePlayback')
   }
 
+  seekToTime(newTime) {
+    const targetTrackIndex = Math.max(
+      0,
+      this.audioTracks.findIndex((t) => Math.floor(t.startOffset) <= newTime && Math.floor(t.startOffset + t.duration) > newTime)
+    )
+    this.startTime = newTime
+    if (this.player && targetTrackIndex === this.currentTrackIndex) {
+      const trackTime = Math.max(0, newTime - (this.currentTrack.startOffset || 0))
+      this.player.currentTime = trackTime
+      this.sendPlaybackMetadata(PlayerState.READY)
+    } else {
+      this.playWhenReady = this.playerPlaying
+      this.loadCurrentTrack()
+    }
+  }
+
   seek({ value }) {
-    this.startTime = value
-    this.playWhenReady = this.playerPlaying
-    this.loadCurrentTrack()
+    this.seekToTime(value)
   }
 
   seekForward({ value }) {
-    this.startTime = Math.min(this.overallCurrentTime + value, this.totalDuration)
-    this.playWhenReady = this.playerPlaying
-    this.loadCurrentTrack()
+    this.seekToTime(Math.min(this.overallCurrentTime + value, this.totalDuration))
   }
 
   seekBackward({ value }) {
-    this.startTime = Math.max(0, this.overallCurrentTime - value)
-    this.playWhenReady = this.playerPlaying
-    this.loadCurrentTrack()
+    this.seekToTime(Math.max(0, this.overallCurrentTime - value))
   }
 
   setPlaybackSpeed({ value }) {

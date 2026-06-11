@@ -61,11 +61,6 @@
     <!-- No progress shown for collapsed series in library -->
     <div v-if="!collapsedSeries && (!isPodcast || recentEpisode)" class="absolute bottom-0 left-0 h-1 max-w-full z-10 rounded-b box-shadow-progressbar" :class="itemIsFinished ? 'bg-success' : 'bg-yellow-400'" :style="{ width: width * userProgressPercent + 'px' }"></div>
 
-    <!-- Downloaded icon -->
-    <div v-if="showHasLocalDownload" class="absolute right-0 top-0 z-20" :style="{ top: (isPodcast || (seriesSequence && showSequence) ? 1.75 : 0.375) * sizeMultiplier + 'rem', right: 0.375 * sizeMultiplier + 'rem', padding: `${0.1 * sizeMultiplier}rem ${0.25 * sizeMultiplier}rem` }">
-      <span class="material-symbols text-2xl text-success">download_done</span>
-    </div>
-
     <!-- Error widget -->
     <div v-if="showError" :style="{ height: 1.5 * sizeMultiplier + 'rem', width: 2.5 * sizeMultiplier + 'rem' }" class="bg-error rounded-r-full shadow-md flex items-center justify-end border-r border-b border-red-300 absolute bottom-4 left-0 z-10">
       <span class="material-symbols text-red-100 pr-1" :style="{ fontSize: 0.875 * sizeMultiplier + 'rem' }">priority_high</span>
@@ -166,7 +161,7 @@ export default {
       return this.mediaType === 'podcast'
     },
     placeholderUrl() {
-      return '/book_placeholder.jpg'
+      return 'book_placeholder.jpg'
     },
     bookCoverSrc() {
       if (this.isLocal) {

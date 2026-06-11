@@ -7,7 +7,7 @@
         </div>
         <div class="item-table-content h-full px-2 flex items-center">
           <div class="max-w-full">
-            <p class="truncate block text-sm">{{ itemTitle }} <span v-if="localLibraryItem" class="material-symbols text-success text-base align-text-bottom">download_done</span></p>
+            <p class="truncate block text-sm">{{ itemTitle }}</p>
             <p v-if="authorName" class="truncate block text-fg-muted text-xs">{{ authorName }}</p>
             <p class="text-xxs text-fg-muted">{{ itemDuration }}</p>
           </div>

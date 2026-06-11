@@ -107,7 +107,7 @@ export default {
       return this.author
     },
     placeholderUrl() {
-      return '/book_placeholder.jpg'
+      return 'book_placeholder.jpg'
     },
     fullCoverUrl() {
       if (this.isLocal) {
