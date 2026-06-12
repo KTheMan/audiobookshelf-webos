@@ -76,7 +76,7 @@ class AbsAudioPlayerWeb extends WebPlugin {
       }
       const reqBody = {
         deviceInfo,
-        mediaPlayer: 'html5-webos',
+        mediaPlayer: 'html5-' + (document.documentElement.dataset.platform || 'webos'),
         forceDirectPlay: true
       }
       const playbackSession = await $axios.$post(route, reqBody)

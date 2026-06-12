@@ -1,0 +1,82 @@
+/* ─── Tizen (Samsung Smart TV) layout overrides ────────────────────────────
+   Mirrors the webOS TV rules in webos.css but scoped to data-platform=tizen.
+   Samsung Tizen 4.0+ runs Chromium 56+ so no legacy prefixes needed.       */
+
+html[data-platform='tizen'] {
+  font-size: 20px;
+}
+
+html[data-platform='tizen'] body {
+  font-size: 1.25rem;
+}
+
+/* Focused element outline */
+html[data-platform='tizen'] [tabindex]:focus,
+html[data-platform='tizen'] [data-focusable]:focus,
+html[data-platform='tizen'] button:focus,
+html[data-platform='tizen'] a:focus {
+  outline: 3px solid #1ad691;
+  outline-offset: 2px;
+}
+
+/* Appbar: larger icons and library label */
+html[data-platform='tizen'] #appbar .material-symbols {
+  font-size: 2rem;
+}
+html[data-platform='tizen'] #appbar p {
+  font-size: 1rem;
+}
+
+/* Bookshelf row padding */
+html[data-platform='tizen'] .bookshelfRow {
+  padding-left: 24px;
+  padding-right: 24px;
+}
+
+/* Nav bar and toolbar */
+html[data-platform='tizen'] .home-bookshelf-nav-bar,
+html[data-platform='tizen'] .home-bookshelf-toolbar {
+  font-size: 1.1rem;
+}
+
+/* Item detail page */
+html[data-platform='tizen'] #item-page {
+  padding: 0 5vw;
+}
+
+/* Progress bar on book cards: taller for 10-foot readability */
+html[data-platform='tizen'] .box-shadow-progressbar {
+  height: 6px;
+}
+
+/* Connection and download indicators */
+html[data-platform='tizen'] .widgets-connection-indicator span,
+html[data-platform='tizen'] .widgets-download-progress-indicator span {
+  font-size: 1.5rem;
+}
+
+/* Bookshelf scroll container: full height so last row isn't clipped */
+html[data-platform='tizen'] #bookshelf {
+  height: 100%;
+  min-height: 100%;
+}
+
+/* Hide all scrollbars — TV uses D-pad, not drag */
+html[data-platform='tizen'] ::-webkit-scrollbar {
+  display: none;
+}
+
+/* Suppress tap highlight on Samsung browser */
+html[data-platform='tizen'],
+html[data-platform='tizen'] body {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Samsung browser button reset — prevents OS chrome bleeding through */
+html[data-platform='tizen'] button {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  border: 0;
+  padding: 0;
+}

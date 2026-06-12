@@ -33,7 +33,7 @@ export default {
     link: [{ rel: 'icon', type: 'image/x-icon', href: 'favicon.ico' }]
   },
 
-  css: ['@/assets/tailwind.css', '@/assets/app.css', '@/assets/webos.css'],
+  css: ['@/assets/tailwind.css', '@/assets/app.css', '@/assets/webos.css', '@/assets/tizen.css'],
 
   plugins: [
     '@/plugins/webos/polyfills.js',

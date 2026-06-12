@@ -103,18 +103,22 @@ class TVRemoteHandler {
         break
       case 'ColorRed':
       case 'Red':
+      case 'ColorF0Red':
         this.emitColorKey('red')
         break
       case 'ColorGreen':
       case 'Green':
+      case 'ColorF1Green':
         this.emitColorKey('green')
         break
       case 'ColorYellow':
       case 'Yellow':
+      case 'ColorF2Yellow':
         this.emitColorKey('yellow')
         break
       case 'ColorBlue':
       case 'Blue':
+      case 'ColorF3Blue':
         this.emitColorKey('blue')
         break
       case 'ChannelUp':
