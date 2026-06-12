@@ -268,7 +268,15 @@ class TVRemoteHandler {
   }
 
   getFocusableElements(root) {
-    const container = root || document
+    let container = root || document
+    // Auto-scope to an open modal overlay so D-pad can't escape to background content
+    if (!root) {
+      const openModal = Array.from(document.querySelectorAll('.modal')).find((m) => {
+        const s = window.getComputedStyle(m)
+        return s.opacity !== '0' && s.display !== 'none' && s.visibility !== 'hidden'
+      })
+      if (openModal) container = openModal
+    }
     return Array.from(
       container.querySelectorAll(
         'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"]), [data-focusable]'
