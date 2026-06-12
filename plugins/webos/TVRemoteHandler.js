@@ -284,9 +284,21 @@ class TVRemoteHandler {
     ).filter((el) => {
       const style = window.getComputedStyle(el)
       if (style.display === 'none' || style.visibility === 'hidden' || el.offsetParent === null) return false
-      // Exclude elements translated off-screen (e.g. closed drawer sliding right)
       const rect = el.getBoundingClientRect()
-      return rect.right > 0 && rect.bottom > 0 && rect.left < window.innerWidth && rect.top < window.innerHeight
+      // Exclude elements translated off-screen (e.g. closed drawer sliding right)
+      if (rect.right <= 0 || rect.bottom <= 0 || rect.left >= window.innerWidth || rect.top >= window.innerHeight) return false
+      // Exclude elements clipped by an overflow:hidden ancestor (e.g. content
+      // behind the mini player bar after #content shrinks with playerOpen class)
+      let node = el.parentElement
+      while (node && node !== document.body) {
+        const ps = window.getComputedStyle(node)
+        if (ps.overflow === 'hidden' || ps.overflowY === 'hidden') {
+          const pr = node.getBoundingClientRect()
+          if (rect.bottom > pr.bottom + 2 || rect.top < pr.top - 2) return false
+        }
+        node = node.parentElement
+      }
+      return true
     })
   }
 
@@ -424,6 +436,14 @@ export default ({ app }, inject) => {
     (isOpen) => {
       if (isOpen) setTimeout(() => tvRemote.setInitialFocus(), 80)
     }
+  )
+
+  // When the mini player opens/closes, #content height changes and previously
+  // visible elements may become clipped. Reset focus so we don't start from
+  // a now-invisible position.
+  app.store.watch(
+    (_state, getters) => getters['getIsPlayerOpen'],
+    () => { setTimeout(() => tvRemote.setInitialFocus(), 100) }
   )
 }
 

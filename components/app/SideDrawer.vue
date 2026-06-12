@@ -66,6 +66,11 @@ export default {
           })
         } else {
           this.removeListener()
+          // Restore focus to content so D-pad navigation doesn't start from
+          // the now-translated-off-screen drawer element.
+          this.$nextTick(() => {
+            if (this.$tvRemote) this.$tvRemote.setInitialFocus()
+          })
         }
       }
     }
