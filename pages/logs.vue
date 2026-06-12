@@ -3,7 +3,7 @@
     <div class="flex items-center mb-2 space-x-2 px-4">
       <p class="text-lg font-bold">{{ $strings.ButtonLogs }}</p>
       <ui-icon-btn outlined borderless :icon="isCopied ? 'check' : 'content_copy'" @click="copyToClipboard" />
-      <ui-icon-btn outlined borderless icon="share" @click="shareLogs" />
+      <ui-icon-btn v-if="$platform !== 'webos'" outlined borderless icon="share" @click="shareLogs" />
       <div class="flex-grow"></div>
       <ui-icon-btn outlined borderless icon="more_vert" @click="showDialog = true" />
     </div>

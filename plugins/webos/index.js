@@ -8,4 +8,7 @@ import { AbsLogger } from './AbsLogger'
 Vue.prototype.$platform = 'webos'
 document.documentElement.dataset.platform = 'webos'
 
+const savedZoom = localStorage.getItem('webos-zoom')
+if (savedZoom) document.documentElement.style.zoom = savedZoom
+
 export { AbsAudioPlayer, AbsDownloader, AbsFileSystem, AbsLogger, AbsDatabase }

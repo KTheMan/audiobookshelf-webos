@@ -65,8 +65,8 @@
               <ui-btn :disabled="processing || !networkConnected" type="submit" class="mt-1 h-10">{{ networkConnected ? $strings.ButtonSubmit : $strings.MessageNoNetworkConnection }}</ui-btn>
             </div>
           </form>
-          <div v-if="isLocalAuthEnabled && isOpenIDAuthEnabled" class="w-full h-px bg-fg/10 my-4" />
-          <ui-btn v-if="isOpenIDAuthEnabled" :disabled="processing" class="h-10 w-full" @click="clickLoginWithOpenId">{{ oauth.buttonText }}</ui-btn>
+          <div v-if="isLocalAuthEnabled && isOpenIDAuthEnabled && $platform !== 'webos'" class="w-full h-px bg-fg/10 my-4" />
+          <ui-btn v-if="isOpenIDAuthEnabled && $platform !== 'webos'" :disabled="processing" class="h-10 w-full" @click="clickLoginWithOpenId">{{ oauth.buttonText }}</ui-btn>
         </template>
       </div>
 
@@ -161,14 +161,10 @@ export default {
       })
     },
     async showOldAuthWarningDialog() {
-      const confirmResult = await Dialog.confirm({
+      await Dialog.alert({
         title: 'Old Server Auth Warning',
-        message: this.$strings.MessageOldServerAuthWarningHelp,
-        cancelButtonTitle: this.$strings.ButtonReadMore
+        message: this.$strings.MessageOldServerAuthWarningHelp
       })
-      if (!confirmResult.value) {
-        window.open('https://github.com/advplyr/audiobookshelf/discussions/4460', '_blank')
-      }
     },
     checkIdUuid(userId) {
       return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(userId)

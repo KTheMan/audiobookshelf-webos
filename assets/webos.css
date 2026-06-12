@@ -206,3 +206,9 @@ html[data-platform='webos'] .widgets-connection-indicator span,
 html[data-platform='webos'] .widgets-download-progress-indicator span {
   font-size: 1.5rem;
 }
+
+/* Bookshelf: let the inner scroll container grow to full height so the last row isn't clipped */
+html[data-platform='webos'] #bookshelf {
+  height: 100%;
+  min-height: 100%;
+}
