@@ -217,9 +217,13 @@ class TVRemoteHandler {
 
     focusable.forEach((el) => {
       if (el === current) return
-      // Don't let a single Up press cross from content into the appbar —
-      // that requires a 3-second hold (see _upHoldTimer in handleKeydown).
-      if (!currentInAppbar && direction === 'up' && appbar && appbar.contains(el)) return
+      // Block crossing from content into the appbar on a single Up press only
+      // when there is still scroll room above. If the content is already topped
+      // out (scrollTop === 0) let Up reach the appbar naturally.
+      if (!currentInAppbar && direction === 'up' && appbar && appbar.contains(el)) {
+        const scrollable = this._findScrollableParent(current) || document.scrollingElement || document.documentElement
+        if (scrollable && scrollable.scrollTop > 0) return
+      }
 
       const rect = el.getBoundingClientRect()
       let isValid = false
