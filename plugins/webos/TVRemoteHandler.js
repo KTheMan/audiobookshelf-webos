@@ -239,11 +239,16 @@ class TVRemoteHandler {
           distance = Math.abs(rect.left - currentRect.left) + (rect.top - currentRect.bottom)
           break
         case 'left':
-          isValid = rect.right <= currentRect.left + 5
+          // Require vertical overlap so left/right navigation stays within the
+          // same row and bottoms out at the row edge instead of wrapping to a
+          // different line.
+          isValid = rect.right <= currentRect.left + 5 &&
+            rect.bottom > currentRect.top && rect.top < currentRect.bottom
           distance = Math.abs(rect.top - currentRect.top) + (currentRect.left - rect.right)
           break
         case 'right':
-          isValid = rect.left >= currentRect.right - 5
+          isValid = rect.left >= currentRect.right - 5 &&
+            rect.bottom > currentRect.top && rect.top < currentRect.bottom
           distance = Math.abs(rect.top - currentRect.top) + (rect.left - currentRect.right)
           break
       }
