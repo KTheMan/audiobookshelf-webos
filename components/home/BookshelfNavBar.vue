@@ -170,7 +170,10 @@ export default {
 /* TV nav tabs: flex-col stack, accent underline on active */
 .webos-nav-tab {
   flex-direction: column;
-  gap: 2px;
+}
+
+.webos-nav-tab > * + * {
+  margin-top: 2px;
 }
 .webos-nav-tab[data-active='true'] {
   border-bottom: 3px solid #1ad691;

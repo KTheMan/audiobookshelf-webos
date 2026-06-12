@@ -215,7 +215,10 @@ export default {
 
 .webos-tv-player-top-right {
   display: flex;
-  gap: 20px;
+}
+
+.webos-tv-player-top-right > * + * {
+  margin-left: 20px;
 }
 
 .webos-tv-btn-icon {
@@ -289,8 +292,11 @@ export default {
 .webos-tv-progress-container {
   display: flex;
   align-items: center;
-  gap: 20px;
   margin-bottom: 30px;
+}
+
+.webos-tv-progress-container > * + * {
+  margin-left: 20px;
 }
 
 .webos-tv-progress-bar {
@@ -334,7 +340,10 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 40px;
+}
+
+.webos-tv-control-buttons > * + * {
+  margin-left: 40px;
 }
 
 .webos-tv-control-btn {
@@ -416,9 +425,12 @@ export default {
   display: flex;
   align-items: center;
   padding: 0 30px;
-  gap: 20px;
   z-index: 90;
   cursor: pointer;
+}
+
+.webos-tv-mini-player > * + * {
+  margin-left: 20px;
 }
 
 .webos-tv-mini-info {

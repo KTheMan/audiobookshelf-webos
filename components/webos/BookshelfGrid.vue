@@ -87,7 +87,11 @@ export default {
   display: flex;
   -webkit-flex-wrap: wrap;
   flex-wrap: wrap;
-  gap: 30px;
+  margin: -15px;
+}
+
+.webos-tv-grid > * {
+  margin: 15px;
 }
 
 .webos-tv-card {

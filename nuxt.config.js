@@ -109,7 +109,8 @@ export default {
       postcssOptions: {
         plugins: {
           tailwindcss: {},
-          autoprefixer: {}
+          autoprefixer: {},
+          'postcss-custom-properties': { preserve: true }
         }
       }
     },

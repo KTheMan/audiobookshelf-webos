@@ -1,7 +1,7 @@
 <template>
   <div v-if="playbackSession" id="streamContainer" class="fixed top-0 left-0 layout-wrapper right-0 z-50 pointer-events-none" :class="{ fullscreen: showFullscreen, 'ios-player': $platform === 'ios', 'web-player': $platform === 'web' }">
     <div v-if="showFullscreen" class="w-full h-full z-10 absolute top-0 left-0 pointer-events-auto" :style="{ backgroundColor: coverRgb }">
-      <div class="w-full h-full absolute top-0 left-0 pointer-events-none" style="background: var(--gradient-audio-player)" />
+      <div class="w-full h-full absolute top-0 left-0 pointer-events-none audio-player-gradient" style="background: var(--gradient-audio-player)" />
 
       <div class="top-4 left-4 absolute cursor-pointer">
         <span class="material-symbols text-5xl" :class="{ 'text-black text-opacity-75': coverBgIsLight && theme !== 'black' }" @click="collapseFullscreen">keyboard_arrow_down</span>
@@ -65,7 +65,7 @@
           <span class="material-symbols text-3xl text-fg cursor-pointer" :class="chapters.length ? 'text-opacity-75' : 'text-opacity-10'" @click="clickChaptersBtn">format_list_bulleted</span>
         </div>
       </div>
-      <div v-else class="w-full h-full absolute top-0 left-0 pointer-events-none" style="background: var(--gradient-minimized-audio-player)" />
+      <div v-else class="w-full h-full absolute top-0 left-0 pointer-events-none audio-player-gradient-minimized" style="background: var(--gradient-minimized-audio-player)" />
 
       <div id="playerControls" class="absolute right-0 bottom-0 mx-auto" style="max-width: 414px">
         <div class="flex items-center max-w-full" :class="playerSettings.lockUi ? 'justify-center' : 'justify-between'">
@@ -1083,9 +1083,11 @@ export default {
   pointer-events: auto;
 }
 .fullscreen .title-author-texts .title-text {
+  font-size: 1.1rem;
   font-size: clamp(0.8rem, calc(var(--cover-image-height) / 260 * 20), 1.3rem);
 }
 .fullscreen .title-author-texts .author-text {
+  font-size: 0.8rem;
   font-size: clamp(0.6rem, calc(var(--cover-image-height) / 260 * 16), 1rem);
 }
 
@@ -1154,5 +1156,13 @@ export default {
 }
 .fullscreen #playerControls .play-btn .material-symbols {
   font-size: 2.1rem;
+}
+
+/* Chrome 38 fallback: inline style var() is ignored so the class provides the gradient */
+.audio-player-gradient {
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(38, 38, 38, 1) 80%);
+}
+.audio-player-gradient-minimized {
+  background: linear-gradient(145deg, rgba(38, 38, 38, 0.5) 0%, rgba(38, 38, 38, 0.9) 20%, rgb(38, 38, 38) 60%);
 }
 </style>
