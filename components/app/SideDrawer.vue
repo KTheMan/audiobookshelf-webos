@@ -53,8 +53,20 @@ export default {
     },
     show: {
       handler(newVal) {
-        if (newVal) this.registerListener()
-        else this.removeListener()
+        if (newVal) {
+          this.registerListener()
+          // Move D-pad focus into the drawer after the slide-in transition
+          this.$nextTick(() => {
+            const panel = document.getElementById('side-drawer-panel')
+            if (!panel) return
+            const focusable = Array.from(
+              panel.querySelectorAll('a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])')
+            ).filter(el => el.offsetParent !== null)
+            if (focusable.length && this.$tvRemote) this.$tvRemote.setFocus(focusable[0])
+          })
+        } else {
+          this.removeListener()
+        }
       }
     }
   },

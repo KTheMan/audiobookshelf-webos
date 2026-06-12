@@ -362,10 +362,17 @@ class TVRemoteHandler {
   }
 
   setInitialFocus() {
-    const focusable = this.getFocusableElements()
-    if (focusable.length) {
-      this.setFocus(focusable[0])
-    }
+    const appbar = document.getElementById('appbar')
+    const all = this.getFocusableElements()
+    // Prefer content elements (not appbar) — pick the one with the smallest
+    // top position in the viewport so we land at the top of the page content.
+    const content = all.filter(el => !appbar || !appbar.contains(el))
+    const pool = content.length ? content : all
+    if (!pool.length) return
+    const topmost = pool.reduce((best, el) => {
+      return el.getBoundingClientRect().top < best.getBoundingClientRect().top ? el : best
+    })
+    this.setFocus(topmost)
   }
 
   enable() { this.enabled = true }
