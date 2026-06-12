@@ -233,6 +233,12 @@ class TVRemoteHandler {
   }
 
   handleBack() {
+    // Close the side drawer first if it's open, without navigating
+    const store = window.$nuxt?.$store
+    if (store?.state.showSideDrawer) {
+      store.commit('setShowSideDrawer', false)
+      return
+    }
     const router = window.$nuxt?.$router
     if (router && window.history.length > 1) {
       router.back()

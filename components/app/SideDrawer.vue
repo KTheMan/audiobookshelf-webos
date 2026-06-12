@@ -46,6 +46,7 @@ export default {
   },
   watch: {
     $route: {
+      deep: true,
       handler() {
         this.show = false
       }

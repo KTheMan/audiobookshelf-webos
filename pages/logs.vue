@@ -39,7 +39,7 @@ export default {
       isLoading: true,
       isCopied: false,
       hasScrolled: false,
-      maskServerAddress: true,
+      maskServerAddress: false,
       showDialog: false
     }
   },
