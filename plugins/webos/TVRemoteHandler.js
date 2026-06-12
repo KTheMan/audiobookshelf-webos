@@ -33,6 +33,14 @@ class TVRemoteHandler {
   handleFocusin(event) {
     const el = event.target
     if (!el || el === this.focusedElement) return
+    // If the drawer is open and focus escapes it (e.g. via Tab), close the drawer
+    const store = window.$nuxt?.$store
+    if (store?.state.showSideDrawer) {
+      const panel = document.getElementById('side-drawer-panel')
+      if (panel && !panel.contains(el)) {
+        store.commit('setShowSideDrawer', false)
+      }
+    }
     // Keep webos-focused in sync with native browser focus
     el.classList.add('webos-focused')
     document.querySelectorAll('.webos-focused').forEach((prev) => {
@@ -149,8 +157,22 @@ class TVRemoteHandler {
   }
 
   navigateFocus(direction) {
-    const focusable = this.getFocusableElements()
-    if (!focusable.length) return
+    const store = window.$nuxt?.$store
+    const drawerOpen = store?.state.showSideDrawer
+
+    // Drawer is on the right side — pressing Left while it's open closes it
+    if (drawerOpen && direction === 'left') {
+      store.commit('setShowSideDrawer', false)
+      return
+    }
+
+    // Focus trap: while the drawer is open only navigate among drawer elements
+    const root = drawerOpen ? document.getElementById('side-drawer-panel') : null
+    const focusable = this.getFocusableElements(root)
+    if (!focusable.length) {
+      if (drawerOpen) store.commit('setShowSideDrawer', false)
+      return
+    }
 
     const current = this.getFocusedElement()
     if (!current) {
@@ -198,14 +220,18 @@ class TVRemoteHandler {
     }
   }
 
-  getFocusableElements() {
+  getFocusableElements(root) {
+    const container = root || document
     return Array.from(
-      document.querySelectorAll(
+      container.querySelectorAll(
         'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"]), [data-focusable]'
       )
     ).filter((el) => {
       const style = window.getComputedStyle(el)
-      return style.display !== 'none' && style.visibility !== 'hidden' && el.offsetParent !== null
+      if (style.display === 'none' || style.visibility === 'hidden' || el.offsetParent === null) return false
+      // Exclude elements translated off-screen (e.g. closed drawer sliding right)
+      const rect = el.getBoundingClientRect()
+      return rect.right > 0 && rect.bottom > 0 && rect.left < window.innerWidth && rect.top < window.innerHeight
     })
   }
 
