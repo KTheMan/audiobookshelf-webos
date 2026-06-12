@@ -318,10 +318,15 @@ class TVRemoteHandler {
   }
 
   handleBack() {
-    // Close the side drawer first if it's open, without navigating
     const store = window.$nuxt?.$store
+    // Close the side drawer first if it's open
     if (store?.state.showSideDrawer) {
       store.commit('setShowSideDrawer', false)
+      return
+    }
+    // Close any open modal via the shared event bus
+    if (store?.state.globals?.isModalOpen) {
+      window.$nuxt?.$eventBus?.$emit('close-modal')
       return
     }
     const router = window.$nuxt?.$router
@@ -411,6 +416,15 @@ export default ({ app }, inject) => {
   })
   // Also set initial focus on first app load
   setTimeout(() => tvRemote.setInitialFocus(), 300)
+
+  // When any modal opens, move focus into it so D-pad works immediately
+  // and Back can close it without an explicit escape sequence.
+  app.store.watch(
+    (state) => state.globals.isModalOpen,
+    (isOpen) => {
+      if (isOpen) setTimeout(() => tvRemote.setInitialFocus(), 80)
+    }
+  )
 }
 
 export { tvRemote }
