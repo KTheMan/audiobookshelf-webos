@@ -261,6 +261,13 @@ class TVRemoteHandler {
     this.log('Color key:', color)
   }
 
+  setInitialFocus() {
+    const focusable = this.getFocusableElements()
+    if (focusable.length) {
+      this.setFocus(focusable[0])
+    }
+  }
+
   enable() { this.enabled = true }
   disable() { this.enabled = false }
 }
@@ -270,6 +277,14 @@ const tvRemote = new TVRemoteHandler()
 export default ({ app }, inject) => {
   tvRemote.init()
   inject('tvRemote', tvRemote)
+
+  // Auto-focus the first interactive element on each route change so D-pad
+  // navigation always has a known starting point on every page.
+  app.router.afterEach(() => {
+    setTimeout(() => tvRemote.setInitialFocus(), 150)
+  })
+  // Also set initial focus on first app load
+  setTimeout(() => tvRemote.setInitialFocus(), 300)
 }
 
 export { tvRemote }

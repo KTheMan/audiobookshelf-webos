@@ -176,11 +176,17 @@ html[data-platform='webos'] .bookshelfRow {
   padding-right: 24px;
 }
 
-/* Focused card outline using the accent green */
+/* Focused element outline — matches both native :focus and the .webos-focused
+   class that TVRemoteHandler applies (needed on older Chromium where div.focus()
+   doesn't trigger :focus reliably). */
 html[data-platform='webos'] [tabindex]:focus,
+html[data-platform='webos'] [tabindex].webos-focused,
 html[data-platform='webos'] [data-focusable]:focus,
+html[data-platform='webos'] [data-focusable].webos-focused,
 html[data-platform='webos'] button:focus,
-html[data-platform='webos'] a:focus {
+html[data-platform='webos'] button.webos-focused,
+html[data-platform='webos'] a:focus,
+html[data-platform='webos'] a.webos-focused {
   outline: 3px solid #1ad691;
   outline-offset: 2px;
 }

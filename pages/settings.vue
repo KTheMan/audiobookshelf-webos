@@ -8,26 +8,26 @@
         <!-- Display settings -->
         <p class="uppercase text-xs font-semibold text-fg-muted mb-1">{{ $strings.HeaderUserInterfaceSettings }}</p>
         <div class="flex items-center py-2">
-          <div class="w-10 flex justify-center" @click="toggleEnableAltView">
+          <div class="w-10 flex justify-center" data-focusable @click="toggleEnableAltView">
             <ui-toggle-switch v-model="enableBookshelfView" @input="saveSettings" />
           </div>
           <p class="pl-4">{{ $strings.LabelUseBookshelfView }}</p>
         </div>
         <div class="py-2 flex items-center">
           <p class="pr-4 w-36">{{ $strings.LabelLanguage }}</p>
-          <div @click.stop="showLanguageOptions">
+          <div data-focusable @click.stop="showLanguageOptions">
             <ui-text-input :value="languageOption" readonly append-icon="expand_more" style="max-width: 200px" />
           </div>
         </div>
         <div class="py-2 flex items-center">
           <p class="pr-4 w-36">{{ $strings.LabelTheme }}</p>
-          <div @click.stop="showThemeOptions">
+          <div data-focusable @click.stop="showThemeOptions">
             <ui-text-input :value="themeOption" readonly append-icon="expand_more" style="max-width: 200px" />
           </div>
         </div>
         <div class="py-2 flex items-center">
           <p class="pr-4 w-36">Zoom Level</p>
-          <div @click.stop="showZoomOptions">
+          <div data-focusable @click.stop="showZoomOptions">
             <ui-text-input :value="zoomLevelOption" readonly append-icon="expand_more" style="max-width: 200px" />
           </div>
         </div>
@@ -36,31 +36,31 @@
         <p class="uppercase text-xs font-semibold text-fg-muted mb-1 mt-6">{{ $strings.HeaderPlaybackSettings }}</p>
         <div class="py-2 flex items-center">
           <p class="pr-4 w-36">{{ $strings.LabelJumpBackwardsTime }}</p>
-          <div @click.stop="showJumpBackwardsOptions">
+          <div data-focusable @click.stop="showJumpBackwardsOptions">
             <ui-text-input :value="jumpBackwardsOption" readonly append-icon="expand_more" style="width: 145px; max-width: 145px" />
           </div>
         </div>
         <div class="py-2 flex items-center">
           <p class="pr-4 w-36">{{ $strings.LabelJumpForwardsTime }}</p>
-          <div @click.stop="showJumpForwardOptions">
+          <div data-focusable @click.stop="showJumpForwardOptions">
             <ui-text-input :value="jumpForwardOption" readonly append-icon="expand_more" style="width: 145px; max-width: 145px" />
           </div>
         </div>
         <div class="flex items-center py-2">
-          <div class="w-10 flex justify-center" @click="toggleDisableAutoRewind">
+          <div class="w-10 flex justify-center" data-focusable @click="toggleDisableAutoRewind">
             <ui-toggle-switch v-model="settings.disableAutoRewind" @input="saveSettings" />
           </div>
           <p class="pl-4">{{ $strings.LabelDisableAutoRewind }}</p>
         </div>
         <div v-if="!isiOS" class="flex items-center py-2">
-          <div class="w-10 flex justify-center" @click="toggleEnableMp3IndexSeeking">
+          <div class="w-10 flex justify-center" data-focusable @click="toggleEnableMp3IndexSeeking">
             <ui-toggle-switch v-model="settings.enableMp3IndexSeeking" @input="saveSettings" />
           </div>
           <p class="pl-4">{{ $strings.LabelEnableMp3IndexSeeking }}</p>
-          <span class="material-symbols text-xl ml-2" @click.stop="showConfirmMp3IndexSeeking">info</span>
+          <span class="material-symbols text-xl ml-2" data-focusable @click.stop="showConfirmMp3IndexSeeking">info</span>
         </div>
         <div class="flex items-center py-2">
-          <div class="w-10 flex justify-center" @click="toggleAllowSeekingOnMediaControls">
+          <div class="w-10 flex justify-center" data-focusable @click="toggleAllowSeekingOnMediaControls">
             <ui-toggle-switch v-model="settings.allowSeekingOnMediaControls" @input="saveSettings" />
           </div>
           <p class="pl-4">{{ $strings.LabelAllowSeekingOnMediaControls }}</p>
@@ -73,25 +73,25 @@
 
         <p class="uppercase text-xs font-semibold text-fg-muted mb-1">{{ $strings.HeaderSleepTimerSettings }}</p>
         <div class="flex items-center py-2">
-          <div class="w-10 flex justify-center" @click="toggleDisableSleepTimerFadeOut">
+          <div class="w-10 flex justify-center" data-focusable @click="toggleDisableSleepTimerFadeOut">
             <ui-toggle-switch v-model="settings.disableSleepTimerFadeOut" @input="saveSettings" />
           </div>
           <p class="pl-4">{{ $strings.LabelDisableAudioFadeOut }}</p>
-          <span class="material-symbols text-xl ml-2" @click.stop="showInfo('disableSleepTimerFadeOut')">info</span>
+          <span class="material-symbols text-xl ml-2" data-focusable @click.stop="showInfo('disableSleepTimerFadeOut')">info</span>
         </div>
         <div class="flex items-center py-2">
-          <div class="w-10 flex justify-center" @click="toggleSleepTimerAlmostDoneChime">
+          <div class="w-10 flex justify-center" data-focusable @click="toggleSleepTimerAlmostDoneChime">
             <ui-toggle-switch v-model="settings.enableSleepTimerAlmostDoneChime" @input="saveSettings" />
           </div>
           <p class="pl-4">{{ $strings.LabelSleepTimerAlmostDoneChime }}</p>
-          <span class="material-symbols text-xl ml-2" @click.stop="showInfo('enableSleepTimerAlmostDoneChime')">info</span>
+          <span class="material-symbols text-xl ml-2" data-focusable @click.stop="showInfo('enableSleepTimerAlmostDoneChime')">info</span>
         </div>
         <div class="flex items-center py-2">
-          <div class="w-10 flex justify-center" @click="toggleAutoSleepTimer">
+          <div class="w-10 flex justify-center" data-focusable @click="toggleAutoSleepTimer">
             <ui-toggle-switch v-model="settings.autoSleepTimer" @input="saveSettings" />
           </div>
           <p class="pl-4">{{ $strings.LabelAutoSleepTimer }}</p>
-          <span class="material-symbols text-xl ml-2" @click.stop="showInfo('autoSleepTimer')">info</span>
+          <span class="material-symbols text-xl ml-2" data-focusable @click.stop="showInfo('autoSleepTimer')">info</span>
         </div>
         <div v-if="settings.autoSleepTimer" class="py-2 flex items-center">
           <p class="pr-4 w-36">{{ $strings.LabelStartTime }}</p>
@@ -103,20 +103,20 @@
         </div>
         <div v-if="settings.autoSleepTimer" class="py-2 flex items-center">
           <p class="pr-4 w-36">{{ $strings.LabelSleepTimer }}</p>
-          <div @click.stop="showSleepTimerOptions">
+          <div data-focusable @click.stop="showSleepTimerOptions">
             <ui-text-input :value="sleepTimerLengthOption" readonly append-icon="expand_more" style="width: 145px; max-width: 145px" />
           </div>
         </div>
         <div v-if="settings.autoSleepTimer" class="flex items-center py-2">
-          <div class="w-10 flex justify-center" @click="toggleAutoSleepTimerAutoRewind">
+          <div class="w-10 flex justify-center" data-focusable @click="toggleAutoSleepTimerAutoRewind">
             <ui-toggle-switch v-model="settings.autoSleepTimerAutoRewind" @input="saveSettings" />
           </div>
           <p class="pl-4">{{ $strings.LabelAutoSleepTimerAutoRewind }}</p>
-          <span class="material-symbols text-xl ml-2" @click.stop="showInfo('autoSleepTimerAutoRewind')">info</span>
+          <span class="material-symbols text-xl ml-2" data-focusable @click.stop="showInfo('autoSleepTimerAutoRewind')">info</span>
         </div>
         <div v-if="settings.autoSleepTimerAutoRewind" class="py-2 flex items-center">
           <p class="pr-4 w-36">{{ $strings.LabelAutoRewindTime }}</p>
-          <div @click.stop="showAutoSleepTimerRewindOptions">
+          <div data-focusable @click.stop="showAutoSleepTimerRewindOptions">
             <ui-text-input :value="autoSleepTimerRewindLengthOption" readonly append-icon="expand_more" style="width: 145px; max-width: 145px" />
           </div>
         </div>

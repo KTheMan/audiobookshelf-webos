@@ -10,11 +10,15 @@ html[data-platform='tizen'] body {
   font-size: 1.25rem;
 }
 
-/* Focused element outline */
+/* Focused element outline — includes .webos-focused class fallback */
 html[data-platform='tizen'] [tabindex]:focus,
+html[data-platform='tizen'] [tabindex].webos-focused,
 html[data-platform='tizen'] [data-focusable]:focus,
+html[data-platform='tizen'] [data-focusable].webos-focused,
 html[data-platform='tizen'] button:focus,
-html[data-platform='tizen'] a:focus {
+html[data-platform='tizen'] button.webos-focused,
+html[data-platform='tizen'] a:focus,
+html[data-platform='tizen'] a.webos-focused {
   outline: 3px solid #1ad691;
   outline-offset: 2px;
 }
