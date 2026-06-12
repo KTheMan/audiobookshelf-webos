@@ -7,6 +7,9 @@ class TVRemoteHandler {
     this.focusTrapStack = []
     this.enabled = true
     this.DEBUG = false
+    // Key-hold tracking (event.repeat not reliable on webOS 3 / Chromium 38)
+    this._heldKeys = new Set()
+    this._upHoldTimer = null
   }
 
   log(...args) {
@@ -55,18 +58,36 @@ class TVRemoteHandler {
 
     this.log('Keydown:', key)
 
+    const isHeld = this._heldKeys.has(key)
+
     switch (key) {
       case 'ArrowUp':
       case 'Up':
       case 38:
         event.preventDefault()
-        this.navigateFocus('up')
+        if (!isHeld) {
+          this._heldKeys.add(key)
+          // 3-second hold on Up → jump to the appbar toolbar
+          this._upHoldTimer = setTimeout(() => {
+            this._upHoldTimer = null
+            this._focusAppbar()
+          }, 3000)
+          this.navigateFocus('up')
+        } else {
+          // Key held down: scroll content instead of jumping between elements
+          this._scrollInDirection('up')
+        }
         break
       case 'ArrowDown':
       case 'Down':
       case 40:
         event.preventDefault()
-        this.navigateFocus('down')
+        if (!isHeld) {
+          this._heldKeys.add(key)
+          this.navigateFocus('down')
+        } else {
+          this._scrollInDirection('down')
+        }
         break
       case 'ArrowLeft':
       case 'Left':
@@ -153,7 +174,14 @@ class TVRemoteHandler {
   }
 
   handleKeyup(event) {
-    /* reserved for future use */
+    const key = event.key || event.keyCode
+    this._heldKeys.delete(key)
+    if (key === 'ArrowUp' || key === 'Up' || key === 38) {
+      if (this._upHoldTimer) {
+        clearTimeout(this._upHoldTimer)
+        this._upHoldTimer = null
+      }
+    }
   }
 
   navigateFocus(direction) {
@@ -184,8 +212,15 @@ class TVRemoteHandler {
     let bestMatch = null
     let bestDistance = Infinity
 
+    const appbar = document.getElementById('appbar')
+    const currentInAppbar = appbar && appbar.contains(current)
+
     focusable.forEach((el) => {
       if (el === current) return
+      // Don't let a single Up press cross from content into the appbar —
+      // that requires a 3-second hold (see _upHoldTimer in handleKeydown).
+      if (!currentInAppbar && direction === 'up' && appbar && appbar.contains(el)) return
+
       const rect = el.getBoundingClientRect()
       let isValid = false
       let distance = 0
@@ -217,6 +252,9 @@ class TVRemoteHandler {
 
     if (bestMatch) {
       this.setFocus(bestMatch)
+    } else {
+      // No focusable target in this direction — scroll the content instead
+      this._scrollInDirection(direction)
     }
   }
 
@@ -287,6 +325,38 @@ class TVRemoteHandler {
     this.log('Color key:', color)
   }
 
+  _focusAppbar() {
+    const appbar = document.getElementById('appbar')
+    if (!appbar) return
+    const focusable = this.getFocusableElements(appbar)
+    if (focusable.length) this.setFocus(focusable[0])
+    this.log('Long-press Up: focused appbar')
+  }
+
+  _scrollInDirection(direction) {
+    const focused = this.getFocusedElement()
+    const scrollable = this._findScrollableParent(focused) || document.scrollingElement || document.documentElement
+    const amount = 250
+    if (direction === 'up') scrollable.scrollBy({ top: -amount, behavior: 'smooth' })
+    else if (direction === 'down') scrollable.scrollBy({ top: amount, behavior: 'smooth' })
+    else if (direction === 'left') scrollable.scrollBy({ left: -amount, behavior: 'smooth' })
+    else if (direction === 'right') scrollable.scrollBy({ left: amount, behavior: 'smooth' })
+  }
+
+  _findScrollableParent(el) {
+    if (!el) return null
+    let node = el.parentElement
+    while (node && node !== document.body) {
+      const style = window.getComputedStyle(node)
+      const overflow = style.overflow + style.overflowY + style.overflowX
+      if (/(auto|scroll)/.test(overflow) && (node.scrollHeight > node.clientHeight || node.scrollWidth > node.clientWidth)) {
+        return node
+      }
+      node = node.parentElement
+    }
+    return null
+  }
+
   setInitialFocus() {
     const focusable = this.getFocusableElements()
     if (focusable.length) {
@@ -307,6 +377,12 @@ export default ({ app }, inject) => {
   // Auto-focus the first interactive element on each route change so D-pad
   // navigation always has a known starting point on every page.
   app.router.afterEach(() => {
+    // Clear held-key state so timers/scroll from old page don't carry over
+    tvRemote._heldKeys.clear()
+    if (tvRemote._upHoldTimer) {
+      clearTimeout(tvRemote._upHoldTimer)
+      tvRemote._upHoldTimer = null
+    }
     setTimeout(() => tvRemote.setInitialFocus(), 150)
   })
   // Also set initial focus on first app load
