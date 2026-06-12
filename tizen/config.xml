@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget xmlns="http://www.w3.org/ns/widgets"
+        xmlns:tizen="http://tizen.org/ns/widgets"
+        id="http://bigbookshelf.tv"
+        version="0.13.0-beta"
+        viewmodes="maximized">
+
+    <!-- Samsung Tizen TV application descriptor -->
+    <!-- Package ID must be unique in the Samsung app store -->
+    <tizen:application id="BIGbook001.Bigbookshelf"
+                       package="BIGbook001"
+                       required_version="4.0"/>
+
+    <content src="index.html"/>
+
+    <feature name="http://tizen.org/feature/network.internet"/>
+
+    <tizen:privilege name="http://tizen.org/privilege/internet"/>
+
+    <name>Bigbookshelf</name>
+    <description>Audiobookshelf client for Samsung Smart TV</description>
+
+    <icon src="assets/icon.png"/>
+
+    <tizen:profile name="tv-samsung"/>
+
+    <!-- hw-key-event enables Back/Enter/arrow keys from the TV remote -->
+    <tizen:setting screen-orientation="landscape"
+                   context-menu="disable"
+                   background-support="disable"
+                   encryption="disable"
+                   install-location="auto"
+                   hw-key-event="enable"/>
+
+</widget>

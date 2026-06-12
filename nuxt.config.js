@@ -6,7 +6,7 @@ export default {
   telemetry: false,
   env: {
     PROD: '1',
-    WEBOS_APP: '1'
+    SMARTTV_APP: '1'
   },
 
   publicRuntimeConfig: {

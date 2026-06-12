@@ -1,8 +1,8 @@
-# Bigbookshelf (BBS) for LG webOS TV
+# Bigbookshelf (BBS)
 
-An [Audiobookshelf](https://www.audiobookshelf.org/) client for LG webOS Smart TVs.
+An [Audiobookshelf](https://www.audiobookshelf.org/) client for Smart TVs — LG webOS and Samsung Tizen.
 
-Built on top of the [Audiobookshelf Android app](https://github.com/advplyr/audiobookshelf-app) codebase, adapted for the TV experience with remote control navigation and a 10-foot UI.
+Built on top of the [Audiobookshelf Android app](https://github.com/advplyr/audiobookshelf-app) codebase, adapted for the TV experience with remote control navigation and a 10-foot UI. Originally developed for LG webOS; Tizen support added later.
 
 ## Features
 
@@ -19,7 +19,7 @@ Built on top of the [Audiobookshelf Android app](https://github.com/advplyr/audi
 
 ## Requirements
 
-- LG Smart TV running webOS 3.0 or later
+- LG Smart TV running webOS 3.0 or later, **or** Samsung Smart TV running Tizen 4.0 or later
 - An Audiobookshelf server (self-hosted or remote)
 
 ## Installation
@@ -40,15 +40,15 @@ Built on top of the [Audiobookshelf Android app](https://github.com/advplyr/audi
    ares-setup-device -a tv -a <TV_IP_ADDRESS>
 
    # Install the IPK
-   ares-install -d tv audiobookshelf-webos.ipk
+   ares-install -d tv bigbookshelf-webos.ipk
 
    # Launch the app
-   ares-launch -d tv com.audiobookshelf.tv
+   ares-launch -d tv com.bigbookshelf.tv
    ```
 
 ### Via USB
 
-1. Download `audiobookshelf-webos.ipk` from [Releases](https://github.com/KTheMan/audiobookshelf-webos/releases)
+1. Download `bigbookshelf-webos.ipk` from [Releases](https://github.com/KTheMan/audiobookshelf-webos/releases)
 2. Copy the IPK to a USB drive
 3. On your LG TV, open the **Developer Mode** app
 4. Select **Install from USB** and choose the IPK file
@@ -86,7 +86,7 @@ npm run build
 
 Both methods produce:
 - `dist/` — Static web files ready for deployment
-- `audiobookshelf-webos.ipk` — Installable package for webOS TVs
+- `bigbookshelf-webos.ipk` — Installable package for webOS TVs
 
 ### Project Structure
 

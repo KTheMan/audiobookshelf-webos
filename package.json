@@ -1,18 +1,18 @@
 {
-  "name": "bigbookshelf-webos",
+  "name": "bigbookshelf",
   "version": "0.13.0-beta",
   "author": "KTheMan",
-  "description": "Bigbookshelf (BBS) — Audiobookshelf client for LG webOS TV",
+  "description": "Bigbookshelf (BBS) — Audiobookshelf client for Smart TVs (webOS, Tizen)",
   "main": "index.html",
   "scripts": {
     "dev": "npx serve -l 1337 -s dist",
-    "build": "npm run build:web && npm run build:webos",
+    "build": "npm run build:web",
     "build:web": "nuxt generate",
-    "build:webos": "ares-package dist --output ipk",
-    "package": "npm run build:webos",
+    "package:webos": "ares-package dist --output ipk",
+    "package:tizen": "cp tizen/config.xml dist/ && cd dist && zip -r ../bigbookshelf-tizen.wgt . && cd ..",
     "serve": "npx serve -l 1337 -s dist",
     "lint": "eslint . --ext .js,.vue",
-    "clean": "rm -rf dist ipk"
+    "clean": "rm -rf dist ipk *.wgt"
   },
   "dependencies": {
     "@capacitor/core": "^6.0.0",
@@ -44,8 +44,9 @@
   "browserslist": [
     "Chrome >= 38"
   ],
-  "webOS": {
-    "minVersion": "3.0.0",
-    "targetDevice": "tv"
+  "smartTV": {
+    "platforms": ["webos", "tizen"],
+    "minWebOSVersion": "3.0.0",
+    "minTizenVersion": "4.0"
   }
 }
