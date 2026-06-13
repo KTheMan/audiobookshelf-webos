@@ -12,7 +12,7 @@
             <span class="material-symbols fill text-lg">{{ item.icon }}</span>
             <p class="pl-4">{{ item.text }}</p>
           </button>
-          <nuxt-link v-else :to="item.to" :key="item.text" :tabindex="show ? 0 : -1" class="w-full hover:bg-bg/60 flex items-center py-3 px-6 text-fg" :class="currentRoutePath.startsWith(item.to) ? 'bg-bg-hover/50' : 'text-fg-muted'">
+          <nuxt-link v-else :to="item.to" :key="item.text" :tabindex="show ? 0 : -1" class="w-full hover:bg-bg/60 flex items-center py-3 px-6 text-fg" :class="currentRoutePath.startsWith(item.to) ? 'bg-bg-hover/50' : 'text-fg-muted'" @click.native="show = false">
             <span class="material-symbols fill text-lg">{{ item.icon }}</span>
             <p class="pl-4">{{ item.text }}</p>
           </nuxt-link>
@@ -158,6 +158,7 @@ export default {
   methods: {
     async clickAction(action) {
       await this.$hapticsImpact()
+      this.show = false
       if (action === 'logout') {
         await this.logout()
         this.$router.push('/connect')

@@ -354,12 +354,7 @@ class TVRemoteHandler {
 
   handleBack() {
     const store = window.$nuxt?.$store
-    // 1. Close the side drawer first if it's open
-    if (store?.state.showSideDrawer) {
-      store.commit('setShowSideDrawer', false)
-      return
-    }
-    // 2. Close any open modal. Check both the Vuex flag and any visible .modal
+    // 1. Close any open modal. Check both the Vuex flag and any visible .modal
     // overlay in the DOM, since not every modal variant flips the flag.
     const hasVisibleModal = Array.from(document.querySelectorAll('.modal')).some((m) => {
       const s = window.getComputedStyle(m)
@@ -369,12 +364,12 @@ class TVRemoteHandler {
       window.$nuxt?.$eventBus?.$emit('close-modal')
       return
     }
-    // 3. Collapse the fullscreen player to the mini player before leaving the page
+    // 2. Collapse the fullscreen player to the mini player before leaving the page
     if (store?.state.playerIsFullscreen) {
       window.$nuxt?.$eventBus?.$emit('minimize-player')
       return
     }
-    // 4. Otherwise navigate back
+    // 3. Otherwise navigate back
     const router = window.$nuxt?.$router
     if (router && window.history.length > 1) {
       router.back()

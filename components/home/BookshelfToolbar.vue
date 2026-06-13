@@ -8,10 +8,9 @@
         <span v-if="page == 'library' || seriesBookPage" class="toolbar-action material-symbols" data-focusable @click="changeView">{{ !bookshelfListView ? 'view_list' : 'grid_view' }}</span>
         <template v-if="page === 'library'">
           <div class="relative flex items-center">
-            <span class="toolbar-action material-symbols" data-focusable @click="showFilterModal = true">filter_alt</span>
+            <span class="toolbar-action material-symbols" data-focusable @click="showSortFilterMenu = true">tune</span>
             <div v-show="hasFilters" class="absolute top-1 right-1 w-2 h-2 rounded-full bg-success border border-green-300 shadow-sm z-10 pointer-events-none" />
           </div>
-          <span class="toolbar-action material-symbols" data-focusable @click="showSortModal = true">sort</span>
         </template>
         <span v-if="seriesBookPage" class="toolbar-action material-symbols" data-focusable @click="downloadSeries">download</span>
         <span v-if="(page == 'library' && isBookLibrary) || seriesBookPage" class="toolbar-action material-symbols" data-focusable @click="showMoreMenuDialog = true">more_vert</span>
@@ -20,6 +19,7 @@
 
     <modals-order-modal v-model="showSortModal" :order-by.sync="settings.mobileOrderBy" :descending.sync="settings.mobileOrderDesc" @change="updateOrder" />
     <modals-filter-modal v-model="showFilterModal" :filter-by.sync="settings.mobileFilterBy" @change="updateFilter" />
+    <modals-dialog v-model="showSortFilterMenu" :items="sortFilterMenuItems" @action="clickSortFilterAction" />
     <modals-dialog v-model="showMoreMenuDialog" :items="menuItems" @action="clickMenuAction" />
   </div>
 </template>
@@ -30,6 +30,7 @@ export default {
     return {
       showSortModal: false,
       showFilterModal: false,
+      showSortFilterMenu: false,
       settings: {},
       totalEntities: 0,
       showMoreMenuDialog: false
@@ -87,6 +88,20 @@ export default {
     isPodcast() {
       return this.$store.getters['libraries/getCurrentLibraryMediaType'] === 'podcast'
     },
+    sortFilterMenuItems() {
+      const items = [
+        { text: this.$strings.LabelSortBy || 'Sort by…', value: 'show_sort', icon: 'sort' },
+        { text: this.$strings.LabelFilterBy || 'Filter by…', value: 'show_filter', icon: 'filter_alt' }
+      ]
+      if (this.settings.mobileOrderDesc !== undefined) {
+        items.push({
+          text: this.settings.mobileOrderDesc ? (this.$strings.LabelDescending || 'Descending') : (this.$strings.LabelAscending || 'Ascending'),
+          value: 'toggle_dir',
+          icon: this.settings.mobileOrderDesc ? 'south' : 'north'
+        })
+      }
+      return items
+    },
     menuItems() {
       if (!this.isBookLibrary) return []
 
@@ -110,6 +125,17 @@ export default {
     }
   },
   methods: {
+    clickSortFilterAction(action) {
+      this.showSortFilterMenu = false
+      if (action === 'show_sort') {
+        this.showSortModal = true
+      } else if (action === 'show_filter') {
+        this.showFilterModal = true
+      } else if (action === 'toggle_dir') {
+        this.settings.mobileOrderDesc = !this.settings.mobileOrderDesc
+        this.saveSettings()
+      }
+    },
     clickMenuAction(action) {
       this.showMoreMenuDialog = false
       if (action === 'collapse_series') {

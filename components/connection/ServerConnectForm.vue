@@ -4,14 +4,14 @@
       <!-- list of server connection configs -->
       <template v-if="!showForm">
         <div v-for="config in serverConnectionConfigs" :key="config.id" class="border-b border-fg/10 py-4">
-          <div class="flex items-center my-1 relative space-x-2" @click="connectToServer(config)">
+          <div class="flex items-center my-1 relative space-x-2" data-focusable @click="connectToServer(config)">
             <div class="grow inline-flex items-center overflow-hidden">
               <p class="text-base text-fg truncate">{{ config.name }}</p>
             </div>
-            <div class="h-full w-6 flex items-center" @click.stop="editServerConfig(config)">
+            <div class="h-full w-6 flex items-center" data-focusable @click.stop="editServerConfig(config)">
               <span class="material-symbols text-2xl text-fg-muted">more_vert</span>
             </div>
-            <div class="h-full w-6 flex items-center" @click.stop="removeServerConfigClick(config)">
+            <div class="h-full w-6 flex items-center" data-focusable @click.stop="removeServerConfigClick(config)">
               <span class="material-symbols fill text-1.5xl text-fg-muted">delete</span>
             </div>
           </div>
