@@ -46,12 +46,61 @@ Built on top of the [Audiobookshelf Android app](https://github.com/advplyr/audi
    ares-launch -d tv com.bigbookshelf.tv
    ```
 
+### Via SSH (rooted TV)
+
+If your TV is rooted and reachable over SSH, you can pull the latest build
+straight from GitHub Releases onto the TV — no local build or `scp` required.
+The `releases/latest/download/...` URLs always resolve to the newest release.
+
+**LG webOS:**
+
+```bash
+# SSH into the TV
+ssh root@<TV_IP_ADDRESS>
+
+# Download the latest IPK directly onto the TV
+curl -L -o /tmp/bigbookshelf-webos.ipk \
+  https://github.com/KTheMan/audiobookshelf-webos/releases/latest/download/bigbookshelf-webos.ipk
+
+# Install it — opkg on firmwares that ship it...
+opkg install /tmp/bigbookshelf-webos.ipk
+
+# ...or via the webOS install service if opkg is unavailable
+luna-send -n 1 'luna://com.webos.appInstallService/dev/install' \
+  '{"id":"com.bigbookshelf.tv","ipkUrl":"/tmp/bigbookshelf-webos.ipk","subscribe":true}'
+
+# Launch
+luna-send -n 1 'luna://com.webos.service.applicationManager/launch' \
+  '{"id":"com.bigbookshelf.tv"}'
+```
+
+To upgrade later, re-run the `curl` + install steps; remove the old copy first
+with `luna-send -n 1 'luna://com.webos.appInstallService/remove' '{"id":"com.bigbookshelf.tv"}'`
+if an install refuses to overwrite.
+
+**Samsung Tizen:**
+
+```bash
+# Download the latest WGT onto the TV (or your dev machine, for sdb install)
+curl -L -o /tmp/bigbookshelf-tizen.wgt \
+  https://github.com/KTheMan/audiobookshelf-webos/releases/latest/download/bigbookshelf-tizen.wgt
+
+# Install with the Tizen Studio CLI from a connected dev machine
+sdb connect <TV_IP_ADDRESS>
+tizen install -n /tmp/bigbookshelf-tizen.wgt -t <device-id>
+```
+
+> One-liner (download + install on a webOS TV in a single SSH command):
+> ```bash
+> ssh root@<TV_IP_ADDRESS> 'curl -L -o /tmp/bbs.ipk https://github.com/KTheMan/audiobookshelf-webos/releases/latest/download/bigbookshelf-webos.ipk && opkg install /tmp/bbs.ipk'
+> ```
+
 ### Via USB
 
-1. Download `bigbookshelf-webos.ipk` from [Releases](https://github.com/KTheMan/audiobookshelf-webos/releases)
-2. Copy the IPK to a USB drive
-3. On your LG TV, open the **Developer Mode** app
-4. Select **Install from USB** and choose the IPK file
+1. Download `bigbookshelf-webos.ipk` (LG) or `bigbookshelf-tizen.wgt` (Samsung) from [the latest release](https://github.com/KTheMan/audiobookshelf-webos/releases/latest)
+2. Copy the package to a USB drive
+3. On your TV, open the **Developer Mode** (LG) or **Device Manager** (Samsung) app
+4. Select **Install from USB** and choose the package file
 
 ## Development
 

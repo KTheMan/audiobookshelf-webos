@@ -1,6 +1,6 @@
 {
   "id": "com.bigbookshelf.tv",
-  "version": "0.13.0-beta",
+  "version": "0.13.1-beta",
   "vendor": "KTheMan",
   "type": "web",
   "main": "index.html",
