@@ -196,78 +196,98 @@ class TVRemoteHandler {
 
     // Focus trap: while the drawer is open only navigate among drawer elements
     const root = drawerOpen ? document.getElementById('side-drawer-panel') : null
-    const focusable = this.getFocusableElements(root)
-    if (!focusable.length) {
-      if (drawerOpen) store.commit('setShowSideDrawer', false)
-      return
-    }
 
     const current = this.getFocusedElement()
+    const onScreen = this.getFocusableElements(root)
     if (!current) {
-      this.setFocus(focusable[0])
+      if (onScreen.length) this.setFocus(onScreen[0])
+      else if (drawerOpen) store.commit('setShowSideDrawer', false)
       return
     }
-
-    const currentRect = current.getBoundingClientRect()
-    let bestMatch = null
-    let bestDistance = Infinity
 
     const appbar = document.getElementById('appbar')
     const currentInAppbar = appbar && appbar.contains(current)
-
-    focusable.forEach((el) => {
-      if (el === current) return
-      // Block crossing from content into the appbar on a single Up press only
-      // when there is still scroll room above. If the content is already topped
-      // out (scrollTop === 0) let Up reach the appbar naturally.
-      if (!currentInAppbar && direction === 'up' && appbar && appbar.contains(el)) {
-        const scrollable = this._findScrollableParent(current) || document.scrollingElement || document.documentElement
-        if (scrollable && scrollable.scrollTop > 0) return
-      }
-
-      const rect = el.getBoundingClientRect()
-      let isValid = false
-      let distance = 0
-
-      switch (direction) {
-        case 'up':
-          isValid = rect.bottom <= currentRect.top + 5
-          distance = Math.abs(rect.left - currentRect.left) + (currentRect.top - rect.bottom)
-          break
-        case 'down':
-          isValid = rect.top >= currentRect.bottom - 5
-          distance = Math.abs(rect.left - currentRect.left) + (rect.top - currentRect.bottom)
-          break
-        case 'left':
-          // Require vertical overlap so left/right navigation stays within the
-          // same row and bottoms out at the row edge instead of wrapping to a
-          // different line.
-          isValid = rect.right <= currentRect.left + 5 &&
-            rect.bottom > currentRect.top && rect.top < currentRect.bottom
-          distance = Math.abs(rect.top - currentRect.top) + (currentRect.left - rect.right)
-          break
-        case 'right':
-          isValid = rect.left >= currentRect.right - 5 &&
-            rect.bottom > currentRect.top && rect.top < currentRect.bottom
-          distance = Math.abs(rect.top - currentRect.top) + (rect.left - currentRect.right)
-          break
-      }
-
-      if (isValid && distance < bestDistance) {
-        bestDistance = distance
-        bestMatch = el
-      }
-    })
-
-    if (bestMatch) {
-      this.setFocus(bestMatch)
-    } else {
-      // No focusable target in this direction — scroll the content instead
-      this._scrollInDirection(direction)
+    // On a single Up press, don't jump from content into the appbar while there
+    // is still scroll room above — let Up scroll first and reach the appbar only
+    // once the content is topped out.
+    const blockAppbar = (el) => {
+      if (currentInAppbar || direction !== 'up' || !appbar || !appbar.contains(el)) return false
+      const scrollable = this._findScrollableParent(current) || document.scrollingElement || document.documentElement
+      return scrollable && scrollable.scrollTop > 0
     }
+    const filterPool = (pool) => pool.filter((el) => el !== current && !blockAppbar(el))
+
+    let best = this._pickInDirection(current, direction, filterPool(onScreen))
+    if (!best) {
+      // Nothing on-screen in this direction — consider items just outside the
+      // viewport so focus MOVES to the next item (which setFocus then pulls fully
+      // into view) instead of blindly scrolling the whole container. Restrict
+      // this to the SAME lane (aligned row/column) so we continue along a list or
+      // shelf but never wrap to an unrelated row when a row simply ends.
+      const offScreen = this.getFocusableElements(root, true)
+      best = this._pickInDirection(current, direction, filterPool(offScreen))
+    }
+
+    if (best) this.setFocus(best)
+    else this._scrollInDirection(direction)
   }
 
-  getFocusableElements(root) {
+  // Spatial pick following TV conventions:
+  //   • left/right stay within the current ROW (require vertical overlap), so a
+  //     row bottoms out at its edge instead of wrapping to an unrelated element.
+  //   • up/down move BETWEEN rows (no horizontal-overlap requirement) and pick
+  //     the nearest, best-aligned target.
+  // The along-axis edge gate uses a tolerance scaled to the focused element so a
+  // neighbour is never dropped just because the focused item grew via scale().
+  _pickInDirection(current, direction, pool) {
+    const cur = current.getBoundingClientRect()
+    const curCx = (cur.left + cur.right) / 2
+    const curCy = (cur.top + cur.bottom) / 2
+    const tolX = Math.max(8, Math.min(cur.width * 0.5, 48))
+    const tolY = Math.max(8, Math.min(cur.height * 0.5, 48))
+    let best = null
+    let bestScore = Infinity
+    for (const el of pool) {
+      const r = el.getBoundingClientRect()
+      const cx = (r.left + r.right) / 2
+      const cy = (r.top + r.bottom) / 2
+      const vOverlap = Math.min(r.bottom, cur.bottom) - Math.max(r.top, cur.top) > 0
+      const hOverlap = Math.min(r.right, cur.right) - Math.max(r.left, cur.left) > 0
+      let forward
+      let cross
+      switch (direction) {
+        case 'right':
+          if (!(r.left >= cur.right - tolX && cx > curCx && vOverlap)) continue
+          forward = Math.max(r.left - cur.right, 0)
+          cross = Math.abs(cy - curCy)
+          break
+        case 'left':
+          if (!(r.right <= cur.left + tolX && cx < curCx && vOverlap)) continue
+          forward = Math.max(cur.left - r.right, 0)
+          cross = Math.abs(cy - curCy)
+          break
+        case 'down':
+          if (!(r.top >= cur.bottom - tolY && cy > curCy)) continue
+          forward = Math.max(r.top - cur.bottom, 0)
+          cross = Math.abs(cx - curCx) * (hOverlap ? 1 : 1.5)
+          break
+        default: // up
+          if (!(r.bottom <= cur.top + tolY && cy < curCy)) continue
+          forward = Math.max(cur.top - r.bottom, 0)
+          cross = Math.abs(cx - curCx) * (hOverlap ? 1 : 1.5)
+          break
+      }
+      // Along-axis gap dominates; cross-axis misalignment breaks ties.
+      const score = forward + cross
+      if (score < bestScore) {
+        bestScore = score
+        best = el
+      }
+    }
+    return best
+  }
+
+  getFocusableElements(root, includeOffscreen = false) {
     let container = root || document
     // Auto-scope to an open modal overlay so D-pad can't escape to background content
     if (!root) {
@@ -282,11 +302,21 @@ class TVRemoteHandler {
         'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"]), [data-focusable]'
       )
     ).filter((el) => {
+      // The side drawer is a layout-level overlay that is ALWAYS in the DOM
+      // (translated off-screen when closed). Unless we're explicitly scoped to
+      // it (root === the panel), never let global navigation or initial-focus
+      // land inside it — otherwise focus gets stranded on a hidden drawer link
+      // after it closes and the panel reads as "stuck open".
+      if (!root && el.closest('#side-drawer-panel')) return false
       const style = window.getComputedStyle(el)
       if (style.display === 'none' || style.visibility === 'hidden' || el.offsetParent === null) return false
       const rect = el.getBoundingClientRect()
+      // Skip zero-area elements (e.g. empty connection / download indicators)
+      if (rect.width <= 0 || rect.height <= 0) return false
       // Exclude elements translated off-screen (e.g. closed drawer sliding right)
-      if (rect.right <= 0 || rect.bottom <= 0 || rect.left >= window.innerWidth || rect.top >= window.innerHeight) return false
+      // unless the caller explicitly wants just-offscreen candidates so focus can
+      // move to the next item and be scrolled into view.
+      if (!includeOffscreen && (rect.right <= 0 || rect.bottom <= 0 || rect.left >= window.innerWidth || rect.top >= window.innerHeight)) return false
       // Exclude elements clipped by an overflow:hidden ancestor (e.g. content
       // behind the mini player bar after #content shrinks with playerOpen class)
       let node = el.parentElement
@@ -325,17 +355,62 @@ class TVRemoteHandler {
     if (!this._isNativelyFocusable(el) && !el.hasAttribute('tabindex')) {
       el.setAttribute('tabindex', '-1')
     }
-    el.focus()
+    // focus() itself can trigger a partial native scroll; suppress it and do a
+    // deterministic "fully reveal" pass so the focused item is never left half
+    // off-screen (which used to need a second D-pad press to bring it in).
+    try {
+      el.focus({ preventScroll: true })
+    } catch (e) {
+      el.focus()
+    }
     el.classList.add('webos-focused')
     this.focusedElement = el
 
-    el.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+    this._ensureVisible(el)
 
     document.querySelectorAll('.webos-focused').forEach((prev) => {
       if (prev !== el) prev.classList.remove('webos-focused')
     })
 
     this.log('Focus set to:', el.tagName, el.textContent?.substring(0, 50))
+  }
+
+  // Scroll every scrollable ancestor (and the window) the minimum needed so the
+  // element sits FULLY inside the viewport with a small margin. Done in one pass
+  // so a freshly-focused item is immediately, completely visible.
+  _ensureVisible(el) {
+    const margin = 28
+    let node = el.parentElement
+    while (node && node !== document.body && node !== document.documentElement) {
+      const style = window.getComputedStyle(node)
+      const scrollableY = /(auto|scroll)/.test(style.overflowY) && node.scrollHeight > node.clientHeight
+      const scrollableX = /(auto|scroll)/.test(style.overflowX) && node.scrollWidth > node.clientWidth
+      if (scrollableY || scrollableX) {
+        const nr = node.getBoundingClientRect()
+        let er = el.getBoundingClientRect()
+        if (scrollableY) {
+          if (er.top < nr.top + margin) node.scrollTop -= nr.top + margin - er.top
+          else if (er.bottom > nr.bottom - margin) node.scrollTop += er.bottom - (nr.bottom - margin)
+        }
+        if (scrollableX) {
+          er = el.getBoundingClientRect()
+          if (er.left < nr.left + margin) node.scrollLeft -= nr.left + margin - er.left
+          else if (er.right > nr.right - margin) node.scrollLeft += er.right - (nr.right - margin)
+        }
+      }
+      node = node.parentElement
+    }
+    // Finally reconcile against the viewport itself.
+    const er = el.getBoundingClientRect()
+    const vw = window.innerWidth
+    const vh = window.innerHeight
+    let dy = 0
+    let dx = 0
+    if (er.top < margin) dy = er.top - margin
+    else if (er.bottom > vh - margin) dy = er.bottom - (vh - margin)
+    if (er.left < margin) dx = er.left - margin
+    else if (er.right > vw - margin) dx = er.right - (vw - margin)
+    if (dy || dx) window.scrollBy(dx, dy)
   }
 
   _isNativelyFocusable(el) {
@@ -354,7 +429,13 @@ class TVRemoteHandler {
 
   handleBack() {
     const store = window.$nuxt?.$store
-    // 1. Close any open modal. Check both the Vuex flag and any visible .modal
+    // 1. Dismiss the side drawer overlay first if it's open — an open overlay
+    // should always be the first thing Back closes, never a navigation.
+    if (store?.state.showSideDrawer) {
+      store.commit('setShowSideDrawer', false)
+      return
+    }
+    // 2. Close any open modal. Check both the Vuex flag and any visible .modal
     // overlay in the DOM, since not every modal variant flips the flag.
     const hasVisibleModal = Array.from(document.querySelectorAll('.modal')).some((m) => {
       const s = window.getComputedStyle(m)
@@ -364,12 +445,12 @@ class TVRemoteHandler {
       window.$nuxt?.$eventBus?.$emit('close-modal')
       return
     }
-    // 2. Collapse the fullscreen player to the mini player before leaving the page
+    // 3. Collapse the fullscreen player to the mini player before leaving the page
     if (store?.state.playerIsFullscreen) {
       window.$nuxt?.$eventBus?.$emit('minimize-player')
       return
     }
-    // 3. Otherwise navigate back
+    // 4. Otherwise navigate back
     const router = window.$nuxt?.$router
     if (router && window.history.length > 1) {
       router.back()

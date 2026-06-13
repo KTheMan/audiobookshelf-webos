@@ -66,11 +66,19 @@ export default {
           })
         } else {
           this.removeListener()
-          // Restore focus to content so D-pad navigation doesn't start from
-          // the now-translated-off-screen drawer element.
-          this.$nextTick(() => {
+          // Hand focus back to page content. Blur immediately so the closing
+          // (translating-off-screen) panel can't keep focus, then set content
+          // focus once the slide-out + tabindex updates have settled. Without
+          // this the drawer reads as "stuck open" because a hidden drawer link
+          // is still the active element.
+          const active = document.activeElement
+          const panel = document.getElementById('side-drawer-panel')
+          if (active && panel && panel.contains(active) && typeof active.blur === 'function') {
+            active.blur()
+          }
+          setTimeout(() => {
             if (this.$tvRemote) this.$tvRemote.setInitialFocus()
-          })
+          }, 120)
         }
       }
     }
