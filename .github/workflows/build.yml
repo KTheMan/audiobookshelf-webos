@@ -44,23 +44,36 @@ jobs:
       - name: Package webOS IPK
         run: |
           VERSION=$(node -p "require('./appinfo.json').version")
+          APPID=com.bigbookshelf.tv
 
+          # An .ipk is an `ar` archive of three members, in this order:
+          #   debian-binary   -> the literal string "2.0"
+          #   control.tar.gz  -> the control file at the archive ROOT (./control),
+          #                      NOT nested under a CONTROL/ dir (opkg/dpkg read
+          #                      ./control directly — nesting it triggers
+          #                      "Failed to extract control file").
+          #   data.tar.gz     -> the payload under usr/palm/applications/<appid>/
+          #                      so webOS registers it as an app (this is the same
+          #                      layout `ares-package` produces).
           echo "2.0" > debian-binary
 
-          mkdir -p CONTROL
-          cat > CONTROL/control << EOF
-          Package: com.bigbookshelf.tv
+          mkdir -p control
+          cat > control/control << EOF
+          Package: $APPID
           Version: $VERSION
-          Architecture: arm
+          Architecture: all
           Maintainer: KTheMan
           Section: multimedia
           Priority: optional
           Description: Bigbookshelf (BBS) - Audiobookshelf client for LG webOS TV
           EOF
+          tar czf control.tar.gz -C control .
 
-          tar czf control.tar.gz -C . CONTROL
-          tar czf data.tar.gz -C dist .
-          ar rcs bigbookshelf-webos.ipk debian-binary control.tar.gz data.tar.gz
+          mkdir -p "data/usr/palm/applications/$APPID"
+          cp -a dist/. "data/usr/palm/applications/$APPID/"
+          tar czf data.tar.gz -C data .
+
+          ar rc bigbookshelf-webos.ipk debian-binary control.tar.gz data.tar.gz
 
       - name: Upload webOS IPK artifact
         uses: actions/upload-artifact@v4
